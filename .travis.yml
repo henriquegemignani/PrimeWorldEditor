@@ -1,0 +1,33 @@
+language: cpp
+
+cache:
+  - directories:
+    - .dew
+
+matrix:
+  include:
+    - os: linux
+      dist: xenial
+      compiler: clang
+      addons:
+        apt:
+          packages:
+          - qtbase5-dev
+          - python3
+          - libclang-dev
+          - ninja-build
+      env:
+        - MATRIX_EVAL="sudo apt-get install libclang-dev ninja-build python3"
+
+    - os: osx
+      osx_image: xcode10.2
+      env:
+        - MATRIX_EVAL="brew install ninja https://raw.githubusercontent.com/Homebrew/homebrew-core/bc03ca8ad8f74be348801c99b78905926d91abc1/Formula/qt.rb"
+
+before_install:
+  - eval "${MATRIX_EVAL}"
+  - python3 --version
+
+script:
+  - cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -Bbuild .
+  - cmake --build build
